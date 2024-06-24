@@ -1,26 +1,25 @@
 package Tests;
 
-import Helpers.DataBaseConnector;
+import Helpers.DataBaseHelper;
 import Helpers.Post;
 import Helpers.WordPressClient;
+import io.qameta.allure.*;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.net.http.HttpResponse;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 
 import static org.testng.Assert.*;
 
+@Epic("API DB Testing")
+@Feature("WordPress Posts")
 public class PostTests {
 
     private WordPressClient client;
     private ObjectMapper objectMapper;
 
-    public int postID;
-
+    @Story("Basic Auth Set Up")
     @BeforeClass
     public void setUp() {
         String baseUrl = "http://localhost:8000";
@@ -30,160 +29,86 @@ public class PostTests {
         objectMapper = new ObjectMapper();
     }
 
-    @Test()
-    public void createPostTest() {
-        try {
-            Post post = new Post("Заголовок поста", "Содержимое поста", "publish");
-            HttpResponse<String> createResponse = client.createPost(post);
-            assertEquals(createResponse.statusCode(), 201);
+    @Story("Создание поста")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(description = "Тест создания поста")
+    public void createPostTest() throws Exception {
+        Post post = new Post("Заголовок поста", "Содержимое поста", "publish");
+        HttpResponse<String> createResponse = client.createPost(post);
+        assertEquals(createResponse.statusCode(), 201);
 
-            JsonNode responseBody = objectMapper.readTree(createResponse.body());
-            int postId = responseBody.get("id").asInt();
+        JsonNode responseBody = objectMapper.readTree(createResponse.body());
+        int postId = responseBody.get("id").asInt();
 
-            try (Connection connection = DataBaseConnector.getConnection()) {
-                String query = "SELECT post_title, post_content, post_status FROM wp_posts WHERE ID = ?";
-                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                    preparedStatement.setInt(1, postId);
-                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                        assertTrue(resultSet.next(), "Post not found in database");
-
-                        String title = resultSet.getString("post_title");
-                        String content = resultSet.getString("post_content");
-                        String status = resultSet.getString("post_status");
-
-                        assertEquals(title, "Заголовок поста");
-                        assertEquals(content, "Содержимое поста");
-                        assertEquals(status, "publish");
-                    }
-                }
-            }
-        } catch (Exception e) {
-            fail("Exception thrown during test: " + e.getMessage());
-        }
+        String[] postDetails = DataBaseHelper.getPostById(postId);
+        assertEquals(postDetails[0], "Заголовок поста");
+        assertEquals(postDetails[1], "Содержимое поста");
+        assertEquals(postDetails[2], "publish");
     }
 
-    @Test()
-    public void updatePostByIDTest() {
-        postID = 122;
-        try {
-            Post updatedPost = new Post("Обновленный заголовок", "Обновленное содержимое", "publish");
-            HttpResponse<String> updateResponse = client.updatePost(postID, updatedPost);
-            assertEquals(updateResponse.statusCode(), 200);
+    @Story("Обновление поста")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(description = "Тест обновления поста")
+    public void updatePostByIDTest() throws Exception {
+        int postID = 200;
 
-            // Проверяем обновленный пост в базе данных
-            try (Connection connection = DataBaseConnector.getConnection()) {
-                String query = "SELECT post_title, post_content, post_status FROM wp_posts WHERE ID = ?";
-                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                    preparedStatement.setInt(1, postID);
-                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                        assertTrue(resultSet.next(), "Updated post not found in database");
+        Post updatedPost = new Post("Обновленный заголовок", "Обновленное содержимое", "publish");
+        HttpResponse<String> updateResponse = client.updatePost(postID, updatedPost);
+        assertEquals(updateResponse.statusCode(), 200);
 
-                        String title = resultSet.getString("post_title");
-                        String content = resultSet.getString("post_content");
-                        String status = resultSet.getString("post_status");
-
-                        assertEquals(title, "Обновленный заголовок");
-                        assertEquals(content, "Обновленное содержимое");
-                        assertEquals(status, "publish");
-                    }
-                }
-            }
-        } catch (Exception e) {
-            fail("Exception thrown during test: " + e.getMessage());
-        }
+        String[] postDetails = DataBaseHelper.getPostById(postID);
+        assertEquals(postDetails[0], "Обновленный заголовок");
+        assertEquals(postDetails[1], "Обновленное содержимое");
+        assertEquals(postDetails[2], "publish");
     }
 
-    @Test()
-    public void deletePostByIDTest() {
-        postID = 134;
-        try {
-            HttpResponse<String> deleteResponse = client.deletePost(postID);
-            assertEquals(deleteResponse.statusCode(), 200);
+    @Story("Удаление поста")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(description = "Тест удаления поста")
+    public void deletePostByIDTest() throws Exception {
+        int postID = 200;
 
-            try (Connection connection = DataBaseConnector.getConnection()) {
-                String query = "SELECT post_status FROM wp_posts WHERE ID = ?";
-                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                    preparedStatement.setInt(1, postID);
-                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                        if (resultSet.next()) {
-                            String postStatus = resultSet.getString("post_status");
-                            assertEquals(postStatus, "trash", "Post not marked as deleted in database");
-                        } else {
-                            fail("Post not found in database after deletion");
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            fail("Exception thrown during test: " + e.getMessage());
-        }
+        HttpResponse<String> deleteResponse = client.deletePost(postID);
+        assertEquals(deleteResponse.statusCode(), 200);
+
+        DataBaseHelper.checkPostDeleted(postID);
     }
 
-    @Test()
-    public void createAndUpdatePostTest() {
-        try {
-            Post post = new Post("Заголовок поста", "Содержимое поста", "publish");
-            HttpResponse<String> createResponse = client.createPost(post);
-            assertEquals(createResponse.statusCode(), 201);
+    @Story("Создание и обновление поста")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(description = "Тест создания и обновления поста")
+    public void createAndUpdatePostTest() throws Exception {
+        Post post = new Post("Заголовок поста", "Содержимое поста", "publish");
+        HttpResponse<String> createResponse = client.createPost(post);
+        assertEquals(createResponse.statusCode(), 201);
 
-            JsonNode createResponseBody = objectMapper.readTree(createResponse.body());
-            int postId = createResponseBody.get("id").asInt();
+        JsonNode responseBody = objectMapper.readTree(createResponse.body());
+        int postId = responseBody.get("id").asInt();
 
-            Post updatedPost = new Post("Обновленный заголовок", "Обновленное содержимое", "publish");
-            HttpResponse<String> updateResponse = client.updatePost(postId, updatedPost);
-            assertEquals(updateResponse.statusCode(), 200);
+        Post updatedPost = new Post("Обновленный заголовок", "Обновленное содержимое", "publish");
+        HttpResponse<String> updateResponse = client.updatePost(postId, updatedPost);
+        assertEquals(updateResponse.statusCode(), 200);
 
-            try (Connection connection = DataBaseConnector.getConnection()) {
-                String query = "SELECT post_title, post_content, post_status FROM wp_posts WHERE ID = ?";
-                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                    preparedStatement.setInt(1, postId);
-                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                        assertTrue(resultSet.next(), "Updated post not found in database");
-
-                        String title = resultSet.getString("post_title");
-                        String content = resultSet.getString("post_content");
-                        String status = resultSet.getString("post_status");
-
-                        assertEquals(title, "Обновленный заголовок");
-                        assertEquals(content, "Обновленное содержимое");
-                        assertEquals(status, "publish");
-                    }
-                }
-            }
-        } catch (Exception e) {
-            fail("Exception thrown during test: " + e.getMessage());
-        }
+        String[] postDetails = DataBaseHelper.getPostById(postId);
+        assertEquals(postDetails[0], "Обновленный заголовок");
+        assertEquals(postDetails[1], "Обновленное содержимое");
+        assertEquals(postDetails[2], "publish");
     }
 
-    @Test()
-    public void createAndDeletePostTest() {
-        try {
-            Post post = new Post("Заголовок поста для удаления", "Содержимое поста для удаления", "publish");
-            HttpResponse<String> createResponse = client.createPost(post);
-            assertEquals(createResponse.statusCode(), 201);
+    @Story("Создание и удаление поста")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(description = "Тест создания и удаления поста")
+    public void createAndDeletePostTest() throws Exception {
+        Post post = new Post("Заголовок поста для удаления", "Содержимое поста для удаления", "publish");
+        HttpResponse<String> createResponse = client.createPost(post);
+        assertEquals(createResponse.statusCode(), 201);
 
-            JsonNode createResponseBody = objectMapper.readTree(createResponse.body());
-            int postId = createResponseBody.get("id").asInt();
+        JsonNode createResponseBody = objectMapper.readTree(createResponse.body());
+        int postId = createResponseBody.get("id").asInt();
 
-            HttpResponse<String> deleteResponse = client.deletePost(postId);
-            assertEquals(deleteResponse.statusCode(), 200);
+        HttpResponse<String> deleteResponse = client.deletePost(postId);
+        assertEquals(deleteResponse.statusCode(), 200);
 
-            try (Connection connection = DataBaseConnector.getConnection()) {
-                String query = "SELECT post_status FROM wp_posts WHERE ID = ?";
-                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                    preparedStatement.setInt(1, postId);
-                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                        if (resultSet.next()) {
-                            String postStatus = resultSet.getString("post_status");
-                            assertEquals(postStatus, "trash", "Post not marked as deleted in database");
-                        } else {
-                            fail("Post not found in database after deletion");
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            fail("Exception thrown during test: " + e.getMessage());
-        }
+        DataBaseHelper.checkPostDeleted(postId);
     }
 }
