@@ -2,6 +2,10 @@ package Helpers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Вспомогательный класс для создания json объекта комментария
+ * @author Alex Seburev
+ */
 public class Comment {
     @JsonProperty("post")
     private int postId;

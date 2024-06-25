@@ -8,6 +8,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.testng.asserts.SoftAssert;
+
 import java.net.http.HttpResponse;
 
 import static org.testng.Assert.*;
@@ -18,6 +20,7 @@ public class PostTests {
 
     private WordPressClient client;
     private ObjectMapper objectMapper;
+    SoftAssert softAssert = new SoftAssert();
 
     @Story("Basic Auth Set Up")
     @BeforeClass
@@ -35,15 +38,16 @@ public class PostTests {
     public void createPostTest() throws Exception {
         Post post = new Post("Заголовок поста", "Содержимое поста", "publish");
         HttpResponse<String> createResponse = client.createPost(post);
-        assertEquals(createResponse.statusCode(), 201);
+        softAssert.assertEquals(createResponse.statusCode(), 201);
 
         JsonNode responseBody = objectMapper.readTree(createResponse.body());
         int postId = responseBody.get("id").asInt();
 
         String[] postDetails = DataBaseHelper.getPostById(postId);
-        assertEquals(postDetails[0], "Заголовок поста");
-        assertEquals(postDetails[1], "Содержимое поста");
-        assertEquals(postDetails[2], "publish");
+        softAssert.assertEquals(postDetails[0], "Заголовок поста");
+        softAssert.assertEquals(postDetails[1], "Содержимое поста");
+        softAssert.assertEquals(postDetails[2], "publish");
+        softAssert.assertAll();
     }
 
     @Story("Обновление поста")
@@ -54,12 +58,13 @@ public class PostTests {
 
         Post updatedPost = new Post("Обновленный заголовок", "Обновленное содержимое", "publish");
         HttpResponse<String> updateResponse = client.updatePost(postID, updatedPost);
-        assertEquals(updateResponse.statusCode(), 200);
+        softAssert.assertEquals(updateResponse.statusCode(), 200);
 
         String[] postDetails = DataBaseHelper.getPostById(postID);
-        assertEquals(postDetails[0], "Обновленный заголовок");
-        assertEquals(postDetails[1], "Обновленное содержимое");
-        assertEquals(postDetails[2], "publish");
+        softAssert.assertEquals(postDetails[0], "Обновленный заголовок");
+        softAssert.assertEquals(postDetails[1], "Обновленное содержимое");
+        softAssert.assertEquals(postDetails[2], "publish");
+        softAssert.assertAll();
     }
 
     @Story("Удаление поста")
@@ -80,19 +85,20 @@ public class PostTests {
     public void createAndUpdatePostTest() throws Exception {
         Post post = new Post("Заголовок поста", "Содержимое поста", "publish");
         HttpResponse<String> createResponse = client.createPost(post);
-        assertEquals(createResponse.statusCode(), 201);
+        softAssert.assertEquals(createResponse.statusCode(), 201);
 
         JsonNode responseBody = objectMapper.readTree(createResponse.body());
         int postId = responseBody.get("id").asInt();
 
         Post updatedPost = new Post("Обновленный заголовок", "Обновленное содержимое", "publish");
         HttpResponse<String> updateResponse = client.updatePost(postId, updatedPost);
-        assertEquals(updateResponse.statusCode(), 200);
+        softAssert.assertEquals(updateResponse.statusCode(), 200);
 
         String[] postDetails = DataBaseHelper.getPostById(postId);
-        assertEquals(postDetails[0], "Обновленный заголовок");
-        assertEquals(postDetails[1], "Обновленное содержимое");
-        assertEquals(postDetails[2], "publish");
+        softAssert.assertEquals(postDetails[0], "Обновленный заголовок");
+        softAssert.assertEquals(postDetails[1], "Обновленное содержимое");
+        softAssert.assertEquals(postDetails[2], "publish");
+        softAssert.assertAll();
     }
 
     @Story("Создание и удаление поста")
@@ -101,14 +107,14 @@ public class PostTests {
     public void createAndDeletePostTest() throws Exception {
         Post post = new Post("Заголовок поста для удаления", "Содержимое поста для удаления", "publish");
         HttpResponse<String> createResponse = client.createPost(post);
-        assertEquals(createResponse.statusCode(), 201);
+        softAssert.assertEquals(createResponse.statusCode(), 201);
 
         JsonNode createResponseBody = objectMapper.readTree(createResponse.body());
         int postId = createResponseBody.get("id").asInt();
 
         HttpResponse<String> deleteResponse = client.deletePost(postId);
-        assertEquals(deleteResponse.statusCode(), 200);
-
+        softAssert.assertEquals(deleteResponse.statusCode(), 200);
         DataBaseHelper.checkPostDeleted(postId);
+        softAssert.assertAll();
     }
 }

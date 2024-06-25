@@ -1,6 +1,7 @@
 package Helpers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.qameta.allure.Step;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -36,6 +37,7 @@ public class WordPressClient {
      * @return HTTP - ответ в виде строки
      * @throws Exception если возникает ошибка при отправке запроса
      */
+    @Step("Создание нового поста")
     public HttpResponse<String> createPost(Post post) throws Exception {
         String url = baseUrl + "/wp-json/wp/v2/posts";
         String json = objectMapper.writeValueAsString(post);
@@ -58,6 +60,7 @@ public class WordPressClient {
      * @return HTTP - ответ в виде строки
      * @throws Exception если возникает ошибка при отправке запроса
      */
+    @Step("Обновление существующего поста")
     public HttpResponse<String> updatePost(int postId, Post post) throws Exception {
         String url = baseUrl + "/wp-json/wp/v2/posts/" + postId;
         String json = objectMapper.writeValueAsString(post);
@@ -79,6 +82,7 @@ public class WordPressClient {
      * @return HTTP - ответ в виде строки
      * @throws Exception если возникает ошибка при отправке запроса
      */
+    @Step("Удаление поста")
     public HttpResponse<String> deletePost(int postId) throws Exception {
         String url = baseUrl + "/wp-json/wp/v2/posts/" + postId;
 
@@ -98,6 +102,7 @@ public class WordPressClient {
      * @return HTTP - ответ в виде строки
      * @throws Exception если возникает ошибка при отправке запроса
      */
+    @Step("Создание нового комментария")
     public HttpResponse<String> createComment(Comment comment) throws Exception {
         String url = baseUrl + "/wp-json/wp/v2/comments";
         String json = objectMapper.writeValueAsString(comment);
@@ -120,6 +125,7 @@ public class WordPressClient {
      * @return HTTP -ответ в виде строки
      * @throws Exception если возникает ошибка при отправке запроса
      */
+    @Step("Обновление существующего комментария")
     public HttpResponse<String> updateComment(int commentId, Comment comment) throws Exception {
         String url = baseUrl + "/wp-json/wp/v2/comments/" + commentId;
         String json = objectMapper.writeValueAsString(comment);
@@ -141,6 +147,7 @@ public class WordPressClient {
      * @return HTTP - ответ в виде строки
      * @throws Exception если возникает ошибка при отправке запроса
      */
+    @Step("Удаление комментария")
     public HttpResponse<String> deleteComment(int postId, int commentId) throws Exception {
         String url = baseUrl + "/wp-json/wp/v2/comments/" + commentId + "?post=" + postId;
 

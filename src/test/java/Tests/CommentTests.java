@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.qameta.allure.*;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
+
 import java.net.http.HttpResponse;
 
 import static org.testng.Assert.*;
@@ -15,6 +17,7 @@ import static org.testng.Assert.*;
 public class CommentTests {
     private WordPressClient client;
     private ObjectMapper objectMapper;
+    SoftAssert softAssert = new SoftAssert();
 
     @Story("Basic Auth Set Up")
     @BeforeClass
@@ -34,13 +37,14 @@ public class CommentTests {
 
         Comment comment = new Comment(postId, "Автор", "author@example.com", "Содержимое комментария");
         HttpResponse<String> createCommentResponse = client.createComment(comment);
-        assertEquals(createCommentResponse.statusCode(), 201);
+        softAssert.assertEquals(createCommentResponse.statusCode(), 201);
 
         JsonNode commentResponseBody = objectMapper.readTree(createCommentResponse.body());
         int commentId = commentResponseBody.get("id").asInt();
 
         String commentContent = DataBaseHelper.getCommentById(commentId);
-        assertEquals(commentContent, "Содержимое комментария");
+        softAssert.assertEquals(commentContent, "Содержимое комментария");
+        softAssert.assertAll();
     }
 
     @Story("Обновление комментария у существующего поста")
@@ -52,10 +56,11 @@ public class CommentTests {
 
         Comment updatedComment = new Comment(postId, "Автор", "author@example.com", "Обновленное содержимое комментария");
         HttpResponse<String> updateCommentResponse = client.updateComment(commentId, updatedComment);
-        assertEquals(updateCommentResponse.statusCode(), 200);
+        softAssert.assertEquals(updateCommentResponse.statusCode(), 200);
 
         String updatedCommentContent = DataBaseHelper.getCommentById(commentId);
-        assertEquals(updatedCommentContent, "Обновленное содержимое комментария");
+        softAssert.assertEquals(updatedCommentContent, "Обновленное содержимое комментария");
+        softAssert.assertAll();
     }
 
     @Story("Удаление комментария у существующего поста")
@@ -77,20 +82,21 @@ public class CommentTests {
     public void createPostAndCommentTest() throws Exception {
         Post post = new Post("Заголовок поста", "Содержимое поста", "publish");
         HttpResponse<String> createPostResponse = client.createPost(post);
-        assertEquals(createPostResponse.statusCode(), 201);
+        softAssert.assertEquals(createPostResponse.statusCode(), 201);
 
         JsonNode postResponseBody = objectMapper.readTree(createPostResponse.body());
         int postId = postResponseBody.get("id").asInt();
 
         Comment comment = new Comment(postId, "Автор", "author@example.com", "Содержимое комментария");
         HttpResponse<String> createCommentResponse = client.createComment(comment);
-        assertEquals(createCommentResponse.statusCode(), 201);
+        softAssert.assertEquals(createCommentResponse.statusCode(), 201);
 
         JsonNode commentResponseBody = objectMapper.readTree(createCommentResponse.body());
         int commentId = commentResponseBody.get("id").asInt();
 
         String commentContent = DataBaseHelper.getCommentById(commentId);
-        assertEquals(commentContent, "Содержимое комментария");
+        softAssert.assertEquals(commentContent, "Содержимое комментария");
+        softAssert.assertAll();
     }
 
     @Story("Создание поста, добавление и обновление комментария к нему")
@@ -99,24 +105,25 @@ public class CommentTests {
     public void createPostAndCommentAndUpdateCommentTest() throws Exception {
         Post post = new Post("Заголовок поста", "Содержимое поста", "publish");
         HttpResponse<String> createPostResponse = client.createPost(post);
-        assertEquals(createPostResponse.statusCode(), 201);
+        softAssert.assertEquals(createPostResponse.statusCode(), 201);
 
         JsonNode postResponseBody = objectMapper.readTree(createPostResponse.body());
         int postId = postResponseBody.get("id").asInt();
 
         Comment comment = new Comment(postId, "Автор", "author@example.com", "Содержимое комментария");
         HttpResponse<String> createCommentResponse = client.createComment(comment);
-        assertEquals(createCommentResponse.statusCode(), 201);
+        softAssert.assertEquals(createCommentResponse.statusCode(), 201);
 
         JsonNode commentResponseBody = objectMapper.readTree(createCommentResponse.body());
         int commentId = commentResponseBody.get("id").asInt();
 
         Comment updatedComment = new Comment(postId, "Автор", "author@example.com", "Обновленное содержимое комментария");
         HttpResponse<String> updateCommentResponse = client.updateComment(commentId, updatedComment);
-        assertEquals(updateCommentResponse.statusCode(), 200);
+        softAssert.assertEquals(updateCommentResponse.statusCode(), 200);
 
         String updatedCommentContent = DataBaseHelper.getCommentById(commentId);
-        assertEquals(updatedCommentContent, "Обновленное содержимое комментария");
+        softAssert.assertEquals(updatedCommentContent, "Обновленное содержимое комментария");
+        softAssert.assertAll();
     }
 
     @Story("Создание поста, добавление и удаление комментария у него")
@@ -125,21 +132,21 @@ public class CommentTests {
     public void cratePostAndCommentAndDeleteCommentTest() throws Exception {
         Post post = new Post("Заголовок поста", "Содержимое поста", "publish");
         HttpResponse<String> createPostResponse = client.createPost(post);
-        assertEquals(createPostResponse.statusCode(), 201);
+        softAssert.assertEquals(createPostResponse.statusCode(), 201);
 
         JsonNode postResponseBody = objectMapper.readTree(createPostResponse.body());
         int postId = postResponseBody.get("id").asInt();
 
         Comment comment = new Comment(postId, "Автор", "author@example.com", "Содержимое комментария");
         HttpResponse<String> createCommentResponse = client.createComment(comment);
-        assertEquals(createCommentResponse.statusCode(), 201);
+        softAssert.assertEquals(createCommentResponse.statusCode(), 201);
 
         JsonNode commentResponseBody = objectMapper.readTree(createCommentResponse.body());
         int commentId = commentResponseBody.get("id").asInt();
 
         HttpResponse<String> deleteCommentResponse = client.deleteComment(postId ,commentId);
-        assertEquals(deleteCommentResponse.statusCode(), 200);
-
+        softAssert.assertEquals(deleteCommentResponse.statusCode(), 200);
         DataBaseHelper.checkCommentDeleted(commentId);
+        softAssert.assertAll();
     }
 }

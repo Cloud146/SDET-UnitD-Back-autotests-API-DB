@@ -1,19 +1,26 @@
 package Helpers;
 
+import io.qameta.allure.Step;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Вспомогательный класс с методами работы с Базой Данных
+ * @author Alex Seburev
+ */
 public class DataBaseHelper {
 
     /**
-     * Проверяет наличие поста в базе данных по его ID.
-     * @param postId ID поста
+     * Метод проверки наличия поста в базе данных по его ID.
+     * @param postId - ID поста
      * @return массив строк, содержащий заголовок, содержимое и статус поста
      * @throws SQLException если возникает ошибка при выполнении запроса
      */
+    @Step("Проверка наличия поста в базе данных по его ID")
     public static String[] getPostById(int postId) throws SQLException, IOException {
         try (Connection connection = DataBaseConnector.getConnection()) {
             String query = "SELECT post_title, post_content, post_status FROM wp_posts WHERE ID = ?";
@@ -34,10 +41,11 @@ public class DataBaseHelper {
     }
 
     /**
-     * Проверяет, помечен ли пост как удаленный в базе данных.
-     * @param postId ID поста
+     * Метод проверки, помечен ли пост как удаленный в базе данных.
+     * @param postId - ID поста
      * @throws SQLException если возникает ошибка при выполнении запроса
      */
+    @Step("Проверка, помечен ли пост как удаленный в базе данных")
     public static void checkPostDeleted(int postId) throws SQLException, IOException {
         try (Connection connection = DataBaseConnector.getConnection()) {
             String query = "SELECT post_status FROM wp_posts WHERE ID = ?";
@@ -58,11 +66,12 @@ public class DataBaseHelper {
     }
 
     /**
-     * Проверяет наличие комментария в базе данных по его ID.
-     * @param commentId ID комментария
+     * Метод проверки наличия комментария в базе данных по его ID.
+     * @param commentId - ID комментария
      * @return строка с содержимым комментария
      * @throws SQLException если возникает ошибка при выполнении запроса
      */
+    @Step("Проверка наличия комментария в базе данных по его ID")
     public static String getCommentById(int commentId) throws SQLException, IOException {
         try (Connection connection = DataBaseConnector.getConnection()) {
             String query = "SELECT comment_content FROM wp_comments WHERE comment_ID = ?";
@@ -80,10 +89,11 @@ public class DataBaseHelper {
     }
 
     /**
-     * Проверяет, помечен ли комментарий как удаленный в базе данных.
-     * @param commentId ID комментария
+     * Метод проверки, помечен ли комментарий как удаленный в базе данных.
+     * @param commentId - ID комментария
      * @throws SQLException если возникает ошибка при выполнении запроса
      */
+    @Step("Проверка, помечен ли комментарий как удаленный в базе данных")
     public static void checkCommentDeleted(int commentId) throws SQLException, IOException {
         try (Connection connection = DataBaseConnector.getConnection()) {
             String query = "SELECT comment_approved FROM wp_comments WHERE comment_ID = ?";

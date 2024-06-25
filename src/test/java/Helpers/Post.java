@@ -2,6 +2,10 @@ package Helpers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Вспомогательный класс для создания json объекта поста
+ * @author Alex Seburev
+ */
 public class Post {
     @JsonProperty("title")
     private String title;
