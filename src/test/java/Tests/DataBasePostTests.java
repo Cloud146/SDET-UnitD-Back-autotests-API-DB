@@ -4,6 +4,8 @@ import Helpers.DataBaseHelper;
 import Helpers.WordPressClient;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -17,10 +19,9 @@ import java.sql.SQLException;
 
 
 public class DataBasePostTests {
-    private WordPressClient client;
     private ObjectMapper objectMapper;
     SoftAssert softAssert = new SoftAssert();
-   private int postId = 1;
+    private int postId = 1;
 
     @Story("Basic Auth Set Up")
     @BeforeClass
@@ -28,19 +29,17 @@ public class DataBasePostTests {
         String baseUrl = "http://localhost:8000";
         String username = "Firstname.LastName";
         String password = "123-Test";
-        client = new WordPressClient(baseUrl, username, password);
+        WordPressClient client = new WordPressClient(baseUrl, username, password);
         objectMapper = new ObjectMapper();
 
         RestAssured.baseURI = baseUrl;
         RestAssured.authentication = RestAssured.basic(username, password);
     }
 
-    /**
-     * Тест на получение поста по ID.
-     * @throws Exception если возникает ошибка при выполнении теста
-     */
-    @Test
-    public void testGetPostById() throws Exception {
+    @Story("Проверка данных созданных через SQL по API")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(description = "Создание поста через SQL и получение его данных по API")
+    public void getPostByIdTest() throws Exception {
         postId = DataBaseHelper.insertPost("Заголовок поста", "Содержимое поста", "publish");
 
         Response response = RestAssured.get("/wp-json/wp/v2/posts/" + postId);
@@ -53,7 +52,7 @@ public class DataBasePostTests {
         softAssert.assertAll();
     }
 
-    @AfterMethod
+    @AfterMethod(description = "Удаление созданных сущностей")
     public void cleanUp() throws SQLException, IOException {
         if (postId != 0) {
             DataBaseHelper.deletePostById(postId);

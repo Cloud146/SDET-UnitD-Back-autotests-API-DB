@@ -121,37 +121,25 @@ public class DataBaseHelper {
      * @throws SQLException если возникает ошибка при выполнении SQL-запроса
      */
     public static int insertPost(String title, String content, String status) throws SQLException, IOException {
-        String query = "INSERT INTO wp_posts (post_author, post_date, post_date_gmt, post_content, post_title, post_excerpt, post_status, comment_status, ping_status, post_password, post_name, to_ping, pinged, post_modified, post_modified_gmt, post_content_filtered, post_parent, guid, menu_order, post_type, post_mime_type, comment_count) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO wp_posts (post_author, post_date, post_date_gmt, post_content, post_title, post_excerpt, post_status, " +
+                "comment_status, ping_status, post_password, post_name, to_ping, pinged, post_modified, post_modified_gmt, " +
+                "post_content_filtered, post_parent, guid, menu_order, post_type, post_mime_type, comment_count) " +
+                "VALUES (?, ?, ?, ?, ?, '', ?, 'open', 'open', '', '', '', '', ?, ?, '', '0', 'http://localhost:8000/?p=4', '0', 'post', '', '0')";
         try (Connection connection = DataBaseConnector.getConnection();
              PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
-            // Получение текущего времени
             LocalDateTime now = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String formattedNow = now.format(formatter);
+
             statement.setInt(1, 1); // post_author
             statement.setString(2, formattedNow); // post_date
             statement.setString(3, formattedNow); // post_date_gmt
             statement.setString(4, content); // post_content
             statement.setString(5, title); // post_title
-            statement.setString(6, ""); // post_excerpt
-            statement.setString(7, status); // post_status
-            statement.setString(8, "open"); // comment_status
-            statement.setString(9, "open"); // ping_status
-            statement.setString(10, ""); // post_password
-            statement.setString(11, ""); // post_name
-            statement.setString(12, ""); // to_ping
-            statement.setString(13, ""); // pinged
-            statement.setString(14, formattedNow); // post_modified
-            statement.setString(15, formattedNow); // post_modified_gmt
-            statement.setString(16, ""); // post_content_filtered
-            statement.setInt(17, 0); // post_parent
-            statement.setString(18, "http://localhost:8000/?p=4"); // guid
-            statement.setInt(19, 0); // menu_order
-            statement.setString(20, "post"); // post_type
-            statement.setString(21, ""); // post_mime_type
-            statement.setInt(22, 0); // comment_count
-
+            statement.setString(6, status); // post_status
+            statement.setString(7, formattedNow); // post_modified
+            statement.setString(8, formattedNow); // post_modified_gmt
             statement.executeUpdate();
 
             ResultSet generatedKeys = statement.getGeneratedKeys();

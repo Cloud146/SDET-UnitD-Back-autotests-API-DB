@@ -7,9 +7,7 @@ import io.qameta.allure.*;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
-
 import java.net.http.HttpResponse;
-
 import static org.testng.Assert.*;
 
 @Epic("API DB Testing")
@@ -33,7 +31,7 @@ public class CommentTests {
     @Severity(SeverityLevel.BLOCKER)
     @Test(description = "Тест создания комментария к существующему посту с postId", priority = 1)
     public void createCommentByPostIdTest() throws Exception {
-        int postId = 285;
+        int postId = 315;
 
         Comment comment = new Comment(postId, "Автор", "author@example.com", "Содержимое комментария");
         HttpResponse<String> createCommentResponse = client.createComment(comment);
@@ -67,8 +65,8 @@ public class CommentTests {
     @Severity(SeverityLevel.CRITICAL)
     @Test(description = "Тест удаления комментария у существующего поста с postId", priority = 3)
     public void deleteCommentByIdTest() throws Exception {
-        int postId = 190;
-        int commentId = 30;
+        int postId = 333;
+        int commentId = 123;
 
         HttpResponse<String> deleteCommentResponse = client.deleteComment(postId ,commentId);
         assertEquals(deleteCommentResponse.statusCode(), 200);

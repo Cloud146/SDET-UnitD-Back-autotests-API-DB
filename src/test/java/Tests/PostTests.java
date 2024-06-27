@@ -9,9 +9,7 @@ import org.testng.annotations.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.testng.asserts.SoftAssert;
-
 import java.net.http.HttpResponse;
-
 import static org.testng.Assert.*;
 
 @Epic("API DB Testing")
