@@ -31,9 +31,9 @@ public class CommentTests {
 
     @Story("Создание комментария к существующему посту")
     @Severity(SeverityLevel.BLOCKER)
-    @Test(description = "Тест создания комментария к существующему посту с postId")
+    @Test(description = "Тест создания комментария к существующему посту с postId", priority = 1)
     public void createCommentByPostIdTest() throws Exception {
-        int postId = 190;
+        int postId = 285;
 
         Comment comment = new Comment(postId, "Автор", "author@example.com", "Содержимое комментария");
         HttpResponse<String> createCommentResponse = client.createComment(comment);
@@ -49,7 +49,7 @@ public class CommentTests {
 
     @Story("Обновление комментария у существующего поста")
     @Severity(SeverityLevel.CRITICAL)
-    @Test(description = "Тест обновления комментария у существующего поста с postId")
+    @Test(description = "Тест обновления комментария у существующего поста с postId", priority = 2)
     public void updateCommentByIdTest() throws Exception {
         int postId = 190;
         int commentId = 30;
@@ -65,7 +65,7 @@ public class CommentTests {
 
     @Story("Удаление комментария у существующего поста")
     @Severity(SeverityLevel.CRITICAL)
-    @Test(description = "Тест удаления комментария у существующего поста с postId")
+    @Test(description = "Тест удаления комментария у существующего поста с postId", priority = 3)
     public void deleteCommentByIdTest() throws Exception {
         int postId = 190;
         int commentId = 30;
@@ -78,7 +78,7 @@ public class CommentTests {
 
     @Story("Создание поста и добавление комментария к нему")
     @Severity(SeverityLevel.BLOCKER)
-    @Test(description = "Тест создания поста и добавления комментария к нему")
+    @Test(description = "Тест создания поста и добавления комментария к нему", priority = 4)
     public void createPostAndCommentTest() throws Exception {
         Post post = new Post("Заголовок поста", "Содержимое поста", "publish");
         HttpResponse<String> createPostResponse = client.createPost(post);
@@ -101,7 +101,7 @@ public class CommentTests {
 
     @Story("Создание поста, добавление и обновление комментария к нему")
     @Severity(SeverityLevel.BLOCKER)
-    @Test(description = "Тест создания поста, добавления и обновления комментария к нему")
+    @Test(description = "Тест создания поста, добавления и обновления комментария к нему", priority = 5)
     public void createPostAndCommentAndUpdateCommentTest() throws Exception {
         Post post = new Post("Заголовок поста", "Содержимое поста", "publish");
         HttpResponse<String> createPostResponse = client.createPost(post);
@@ -128,7 +128,7 @@ public class CommentTests {
 
     @Story("Создание поста, добавление и удаление комментария у него")
     @Severity(SeverityLevel.BLOCKER)
-    @Test(description = "Тест создания поста, добавления и удаления комментария у него")
+    @Test(description = "Тест создания поста, добавления и удаления комментария у него", priority = 6)
     public void cratePostAndCommentAndDeleteCommentTest() throws Exception {
         Post post = new Post("Заголовок поста", "Содержимое поста", "publish");
         HttpResponse<String> createPostResponse = client.createPost(post);

@@ -34,7 +34,7 @@ public class PostTests {
 
     @Story("Создание поста")
     @Severity(SeverityLevel.BLOCKER)
-    @Test(description = "Тест создания поста")
+    @Test(description = "Тест создания поста", priority = 1)
     public void createPostTest() throws Exception {
         Post post = new Post("Заголовок поста", "Содержимое поста", "publish");
         HttpResponse<String> createResponse = client.createPost(post);
@@ -52,7 +52,7 @@ public class PostTests {
 
     @Story("Обновление поста")
     @Severity(SeverityLevel.CRITICAL)
-    @Test(description = "Тест обновления поста")
+    @Test(description = "Тест обновления поста", priority = 2)
     public void updatePostByIDTest() throws Exception {
         int postID = 200;
 
@@ -69,7 +69,7 @@ public class PostTests {
 
     @Story("Удаление поста")
     @Severity(SeverityLevel.CRITICAL)
-    @Test(description = "Тест удаления поста")
+    @Test(description = "Тест удаления поста", priority = 3)
     public void deletePostByIDTest() throws Exception {
         int postID = 200;
 
@@ -81,7 +81,7 @@ public class PostTests {
 
     @Story("Создание и обновление поста")
     @Severity(SeverityLevel.BLOCKER)
-    @Test(description = "Тест создания и обновления поста")
+    @Test(description = "Тест создания и обновления поста", priority = 4)
     public void createAndUpdatePostTest() throws Exception {
         Post post = new Post("Заголовок поста", "Содержимое поста", "publish");
         HttpResponse<String> createResponse = client.createPost(post);
@@ -103,7 +103,7 @@ public class PostTests {
 
     @Story("Создание и удаление поста")
     @Severity(SeverityLevel.BLOCKER)
-    @Test(description = "Тест создания и удаления поста")
+    @Test(description = "Тест создания и удаления поста", priority = 5)
     public void createAndDeletePostTest() throws Exception {
         Post post = new Post("Заголовок поста для удаления", "Содержимое поста для удаления", "publish");
         HttpResponse<String> createResponse = client.createPost(post);
