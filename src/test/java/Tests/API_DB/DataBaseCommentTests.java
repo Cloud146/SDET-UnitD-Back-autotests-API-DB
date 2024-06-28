@@ -1,13 +1,12 @@
-package Tests;
+package Tests.API_DB;
 
 import Helpers.DataBaseHelper;
+import Helpers.RestAssuredHelper;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
+import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -16,48 +15,44 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
 
 public class DataBaseCommentTests {
 
     private int postId;
     private List<Integer> commentIds;
+    private RequestSpecification requestSpec;
 
     @Story("Basic Auth Set Up")
     @BeforeClass
-    public void setup() {
-        RestAssured.baseURI = "http://localhost:8000/wp-json/wp/v2";
+    public void setup() throws IOException {
+        RestAssuredHelper.setup();
+        requestSpec = RestAssuredHelper.getRequestSpec();
         commentIds = new ArrayList<>();
     }
 
     @Story("Проверка данных созданных через SQL по API")
     @Severity(SeverityLevel.CRITICAL)
     @Test(description = "Создание поста и комментария к нему через SQL и получение ответов и данных по API")
-    public void getComment() throws SQLException, IOException {
+    public void getCommentsByPostIdTest() throws SQLException, IOException {
         postId = DataBaseHelper.insertPost("Заголовок поста", "Содержимое поста", "publish");
 
-        int commentId1 = DataBaseHelper.insertComment(postId, "Автор1", "author1@example.com", "Содержимое комментария 1");
-        commentIds.add(commentId1);
+        int commentId = DataBaseHelper.insertComment(postId, "Автор1", "author1@example.com", "Содержимое комментария 1");
+        commentIds.add(commentId);
 
-        RequestSpecification request = given()
-                .auth()
-                .preemptive()
-                .basic("Firstname.LastName", "123-Test");
-
-        Response response = request.get("/comments/" +commentId1);
-
-        Assert.assertEquals(response.getStatusCode(), 200);
-
-        int id = response.jsonPath().getInt("id");
-        int post = response.jsonPath().getInt("post");
-        String authorName = response.jsonPath().getString("author_name");
-        String content = response.jsonPath().getString("content.rendered");
-        String link = response.jsonPath().getString("link");
-
-        Assert.assertEquals(id, commentId1);
-        Assert.assertEquals(post, postId);
-        Assert.assertEquals(authorName, "Автор1");
-        Assert.assertTrue(content.contains("Содержимое комментария 1"));
-        Assert.assertEquals(link, "http://localhost:8000/#comment-" +commentId1);
+        given()
+                .spec(requestSpec)
+                .pathParam("commentId", commentId)
+                .when()
+                .get("/comments/{commentId}")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("id", equalTo(commentId))
+                .body("post", equalTo(postId))
+                .body("author_name", equalTo("Автор1"))
+                .body("content.rendered", containsString("Содержимое комментария 1"))
+                .body("link", equalTo("http://localhost:8000/#comment-" + commentId));
     }
 
     @AfterMethod(description = "Удаление созданных сущностей")

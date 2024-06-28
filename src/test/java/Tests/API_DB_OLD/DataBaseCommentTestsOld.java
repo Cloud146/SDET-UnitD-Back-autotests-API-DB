@@ -1,5 +1,6 @@
-package Tests;
+package Tests.API_DB_OLD;
 
+import Helpers.ConfigurationProvider;
 import Helpers.DataBaseHelper;
 import Helpers.WordPressClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,17 +27,15 @@ public class DataBaseCommentTestsOld {
     private int postId;
     private List<Integer> commentIds;
 
+    private static ConfigurationProvider configurationProvider = new ConfigurationProvider();
+
+
     @Story("Basic Auth Set Up")
     @BeforeMethod
     public void setUp() throws Exception {
-        String baseUrl = "http://localhost:8000";
-        String username = "Firstname.LastName";
-        String password = "123-Test";
-        WordPressClient client = new WordPressClient(baseUrl, username, password);
         objectMapper = new ObjectMapper();
-
-        RestAssured.baseURI = baseUrl;
-        RestAssured.authentication = RestAssured.basic(username, password);
+        RestAssured.baseURI = configurationProvider.getWordPressBaseURL();
+        RestAssured.authentication = RestAssured.basic(configurationProvider.getWordPressBasicAuthUsername(), configurationProvider.getWordPressBasicAuthPassword());
 
         commentIds = new ArrayList<>();
     }

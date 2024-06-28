@@ -1,4 +1,4 @@
-package Tests;
+package Tests.API;
 
 import Helpers.DataBaseHelper;
 import Helpers.Post;
@@ -9,6 +9,8 @@ import org.testng.annotations.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.testng.asserts.SoftAssert;
+
+import java.io.IOException;
 import java.net.http.HttpResponse;
 import static org.testng.Assert.*;
 
@@ -22,11 +24,8 @@ public class PostTests {
 
     @Story("Basic Auth Set Up")
     @BeforeClass
-    public void setUp() {
-        String baseUrl = "http://localhost:8000";
-        String username = "Firstname.LastName";
-        String password = "123-Test";
-        client = new WordPressClient(baseUrl, username, password);
+    public void setUp() throws IOException {
+        client = new WordPressClient();
         objectMapper = new ObjectMapper();
     }
 

@@ -1,4 +1,4 @@
-package Tests;
+package Tests.API;
 
 import Helpers.*;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -7,6 +7,8 @@ import io.qameta.allure.*;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
+
+import java.io.IOException;
 import java.net.http.HttpResponse;
 import static org.testng.Assert.*;
 
@@ -19,11 +21,8 @@ public class CommentTests {
 
     @Story("Basic Auth Set Up")
     @BeforeClass
-    public void setUp() {
-        String baseUrl = "http://localhost:8000";
-        String username = "Firstname.LastName";
-        String password = "123-Test";
-        client = new WordPressClient(baseUrl, username, password);
+    public void setUp() throws IOException {
+        client = new WordPressClient();
         objectMapper = new ObjectMapper();
     }
 
@@ -31,7 +30,7 @@ public class CommentTests {
     @Severity(SeverityLevel.BLOCKER)
     @Test(description = "Тест создания комментария к существующему посту с postId", priority = 1)
     public void createCommentByPostIdTest() throws Exception {
-        int postId = 315;
+        int postId = 416;
 
         Comment comment = new Comment(postId, "Автор", "author@example.com", "Содержимое комментария");
         HttpResponse<String> createCommentResponse = client.createComment(comment);
