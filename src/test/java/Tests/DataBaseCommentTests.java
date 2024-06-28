@@ -1,71 +1,64 @@
 package Tests;
 
 import Helpers.DataBaseHelper;
-import Helpers.WordPressClient;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
+import static io.restassured.RestAssured.given;
 
 public class DataBaseCommentTests {
 
-    SoftAssert softAssert = new SoftAssert();
     private int postId;
     private List<Integer> commentIds;
 
     @Story("Basic Auth Set Up")
-    @BeforeMethod
-    public void setUp() throws Exception {
-        String baseUrl = "http://localhost:8000";
-        String username = "Firstname.LastName";
-        String password = "123-Test";
-        WordPressClient client = new WordPressClient(baseUrl, username, password);
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        RestAssured.baseURI = baseUrl;
-        RestAssured.authentication = RestAssured.basic(username, password);
-
+    @BeforeClass
+    public void setup() {
+        RestAssured.baseURI = "http://localhost:8000/wp-json/wp/v2";
         commentIds = new ArrayList<>();
     }
 
     @Story("Проверка данных созданных через SQL по API")
     @Severity(SeverityLevel.CRITICAL)
-    @Test(description = "Создание поста и комментариев к нему через SQL и получение ответов по API")
-    public void getCommentsByPostIdTest() throws SQLException, IOException {
+    @Test(description = "Создание поста и комментария к нему через SQL и получение ответов и данных по API")
+    public void getComment() throws SQLException, IOException {
         postId = DataBaseHelper.insertPost("Заголовок поста", "Содержимое поста", "publish");
 
         int commentId1 = DataBaseHelper.insertComment(postId, "Автор1", "author1@example.com", "Содержимое комментария 1");
-        int commentId2 = DataBaseHelper.insertComment(postId, "Автор2", "author2@example.com", "Содержимое комментария 2");
         commentIds.add(commentId1);
-        commentIds.add(commentId2);
 
-        int commentCount = DataBaseHelper.getCommentCountForPost(postId);
-        softAssert.assertEquals(commentCount, 2, "Number of comments in the database does not match");
+        RequestSpecification request = given()
+                .auth()
+                .preemptive()
+                .basic("Firstname.LastName", "123-Test");
 
-        Response response1 = RestAssured.get("/wp-json/wp/v2/comments/" + commentId1);
-        softAssert.assertEquals(response1.statusCode(), 200);
+        Response response = request.get("/comments/" +commentId1);
 
-        Response response2 = RestAssured.get("/wp-json/wp/v2/comments/" + commentId2);
-        softAssert.assertEquals(response2.statusCode(), 200);
+        Assert.assertEquals(response.getStatusCode(), 200);
 
-        String commentContent1 = DataBaseHelper.getCommentById(commentId1);
-        softAssert.assertEquals(commentContent1, "Содержимое комментария 1");
+        int id = response.jsonPath().getInt("id");
+        int post = response.jsonPath().getInt("post");
+        String authorName = response.jsonPath().getString("author_name");
+        String content = response.jsonPath().getString("content.rendered");
+        String link = response.jsonPath().getString("link");
 
-        String commentContent2 = DataBaseHelper.getCommentById(commentId2);
-        softAssert.assertEquals(commentContent2, "Содержимое комментария 2");
+        Assert.assertEquals(id, commentId1);
+        Assert.assertEquals(post, postId);
+        Assert.assertEquals(authorName, "Автор1");
+        Assert.assertTrue(content.contains("Содержимое комментария 1"));
+        Assert.assertEquals(link, "http://localhost:8000/#comment-" +commentId1);
     }
-
 
     @AfterMethod(description = "Удаление созданных сущностей")
     public void cleanUp() throws SQLException, IOException {
