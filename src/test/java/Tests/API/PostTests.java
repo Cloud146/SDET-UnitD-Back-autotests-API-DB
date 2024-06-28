@@ -1,4 +1,4 @@
-package Tests;
+package Tests.API;
 
 import Helpers.DataBaseHelper;
 import Helpers.Post;
@@ -10,8 +10,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.testng.asserts.SoftAssert;
 
+import java.io.IOException;
 import java.net.http.HttpResponse;
-
 import static org.testng.Assert.*;
 
 @Epic("API DB Testing")
@@ -24,17 +24,14 @@ public class PostTests {
 
     @Story("Basic Auth Set Up")
     @BeforeClass
-    public void setUp() {
-        String baseUrl = "http://localhost:8000";
-        String username = "Firstname.LastName";
-        String password = "123-Test";
-        client = new WordPressClient(baseUrl, username, password);
+    public void setUp() throws IOException {
+        client = new WordPressClient();
         objectMapper = new ObjectMapper();
     }
 
     @Story("Создание поста")
     @Severity(SeverityLevel.BLOCKER)
-    @Test(description = "Тест создания поста")
+    @Test(description = "Тест создания поста", priority = 1)
     public void createPostTest() throws Exception {
         Post post = new Post("Заголовок поста", "Содержимое поста", "publish");
         HttpResponse<String> createResponse = client.createPost(post);
@@ -52,7 +49,7 @@ public class PostTests {
 
     @Story("Обновление поста")
     @Severity(SeverityLevel.CRITICAL)
-    @Test(description = "Тест обновления поста")
+    @Test(description = "Тест обновления поста", priority = 2)
     public void updatePostByIDTest() throws Exception {
         int postID = 200;
 
@@ -69,7 +66,7 @@ public class PostTests {
 
     @Story("Удаление поста")
     @Severity(SeverityLevel.CRITICAL)
-    @Test(description = "Тест удаления поста")
+    @Test(description = "Тест удаления поста", priority = 3)
     public void deletePostByIDTest() throws Exception {
         int postID = 200;
 
@@ -81,7 +78,7 @@ public class PostTests {
 
     @Story("Создание и обновление поста")
     @Severity(SeverityLevel.BLOCKER)
-    @Test(description = "Тест создания и обновления поста")
+    @Test(description = "Тест создания и обновления поста", priority = 4)
     public void createAndUpdatePostTest() throws Exception {
         Post post = new Post("Заголовок поста", "Содержимое поста", "publish");
         HttpResponse<String> createResponse = client.createPost(post);
@@ -103,7 +100,7 @@ public class PostTests {
 
     @Story("Создание и удаление поста")
     @Severity(SeverityLevel.BLOCKER)
-    @Test(description = "Тест создания и удаления поста")
+    @Test(description = "Тест создания и удаления поста", priority = 5)
     public void createAndDeletePostTest() throws Exception {
         Post post = new Post("Заголовок поста для удаления", "Содержимое поста для удаления", "publish");
         HttpResponse<String> createResponse = client.createPost(post);

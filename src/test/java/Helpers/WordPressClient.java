@@ -3,6 +3,7 @@ package Helpers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.qameta.allure.Step;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -18,15 +19,14 @@ public class WordPressClient {
     private final String authHeader;
     private final ObjectMapper objectMapper;
 
+    private static ConfigurationProvider configurationProvider = new ConfigurationProvider();
+
     /**
      * Объект авторизированного клиента WordPress
-     * @param baseUrl - базой URL
-     * @param username - логин для входа
-     * @param password - пароль для входа
      */
-    public WordPressClient(String baseUrl, String username, String password) {
-        this.baseUrl = baseUrl;
-        String auth = username + ":" + password;
+    public WordPressClient() throws IOException {
+        this.baseUrl = configurationProvider.getWordPressBaseURL();
+        String auth = configurationProvider.getWordPressBasicAuthUsername() + ":" + configurationProvider.getWordPressBasicAuthPassword();
         this.authHeader = "Basic " + Base64.getEncoder().encodeToString(auth.getBytes());
         this.objectMapper = new ObjectMapper();
     }

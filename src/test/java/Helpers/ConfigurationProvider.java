@@ -34,4 +34,31 @@ public class ConfigurationProvider {
     public String getDataBasePassword() throws IOException {
         return ConfigurationManager.getInstance().getProperty("db.password");
     }
+
+    /**
+     * Возвращает URL WordPress из конфигурационного файла
+     * @return URL WordPress
+     * @throws IOException если возникает ошибка при получении свойства
+     */
+    public String getWordPressBaseURL() throws IOException {
+        return ConfigurationManager.getInstance().getProperty("wordpress.base.url");
+    }
+
+    /**
+     * Возвращает имя пользователя для Basic Auth у WordPress из конфигурационного файла
+     * @return имя пользователя для Basic Auth
+     * @throws IOException если возникает ошибка при получении свойства
+     */
+    public String getWordPressBasicAuthUsername() throws IOException {
+        return ConfigurationManager.getInstance().getProperty("wordpress.basic.auth.username");
+    }
+
+    /**
+     * Возвращает пароль для Basic Auth у WordPress из конфигурационного файла
+     * @return пароль для Basic Auth
+     * @throws IOException если возникает ошибка при получении свойства
+     */
+    public String getWordPressBasicAuthPassword() throws IOException {
+        return ConfigurationManager.getInstance().getProperty("wordpress.basic.auth.password");
+    }
 }
