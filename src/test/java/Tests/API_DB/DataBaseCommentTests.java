@@ -48,11 +48,11 @@ public class DataBaseCommentTests {
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .body("id", equalTo(commentId))
-                .body("post", equalTo(postId))
-                .body("author_name", equalTo("Автор1"))
-                .body("content.rendered", containsString("Содержимое комментария 1"))
-                .body("link", equalTo("http://localhost:8000/#comment-" + commentId));
+                .body("id", equalTo(commentId),
+                "post", equalTo(postId),
+                "author_name", equalTo("Автор1"),
+                "content.rendered", containsString("Содержимое комментария 1"),
+                "link", equalTo("http://localhost:8000/#comment-" + commentId));
     }
 
     @AfterMethod(description = "Удаление созданных сущностей")

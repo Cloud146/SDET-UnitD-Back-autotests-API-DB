@@ -40,9 +40,9 @@ public class DataBasePostTests {
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .body("title.rendered", equalTo("Заголовок поста"))
-                .body("content.rendered", equalTo("<p>Содержимое поста</p>\n"))
-                .body("status", equalTo("publish"));
+                .body("title.rendered", equalTo("Заголовок поста"),
+                "content.rendered", equalTo("<p>Содержимое поста</p>\n"),
+                "status", equalTo("publish"));
     }
 
     @AfterMethod(description = "Удаление созданного поста")
