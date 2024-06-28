@@ -25,4 +25,20 @@ public class Comment {
         this.authorEmail = authorEmail;
         this.content = content;
     }
+
+    public int getPostId() {
+        return postId;
+    }
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public String getAuthorEmail() {
+        return authorEmail;
+    }
 }

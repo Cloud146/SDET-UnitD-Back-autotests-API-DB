@@ -1,4 +1,4 @@
-package Tests.API_DB;
+package Tests.API_DB_RestAssured;
 
 import Helpers.DataBaseHelper;
 import Helpers.RestAssuredHelper;
