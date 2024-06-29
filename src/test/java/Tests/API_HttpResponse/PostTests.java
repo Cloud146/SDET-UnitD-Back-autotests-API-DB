@@ -1,4 +1,4 @@
-package Tests.API;
+package Tests.API_HttpResponse;
 
 import Helpers.DataBaseHelper;
 import Helpers.Post;
@@ -9,7 +9,6 @@ import org.testng.annotations.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.testng.asserts.SoftAssert;
-
 import java.io.IOException;
 import java.net.http.HttpResponse;
 import static org.testng.Assert.*;

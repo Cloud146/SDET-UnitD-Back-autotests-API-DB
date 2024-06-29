@@ -2,7 +2,6 @@ package Helpers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.qameta.allure.Step;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;

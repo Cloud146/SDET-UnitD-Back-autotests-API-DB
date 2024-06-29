@@ -1,7 +1,6 @@
 package Helpers;
 
 import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
 
 import java.io.IOException;

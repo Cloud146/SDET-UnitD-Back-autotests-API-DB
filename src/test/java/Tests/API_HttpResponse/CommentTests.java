@@ -1,4 +1,4 @@
-package Tests.API;
+package Tests.API_HttpResponse;
 
 import Helpers.*;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -7,7 +7,6 @@ import io.qameta.allure.*;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
-
 import java.io.IOException;
 import java.net.http.HttpResponse;
 import static org.testng.Assert.*;
@@ -30,7 +29,7 @@ public class CommentTests {
     @Severity(SeverityLevel.BLOCKER)
     @Test(description = "Тест создания комментария к существующему посту с postId", priority = 1)
     public void createCommentByPostIdTest() throws Exception {
-        int postId = 416;
+        int postId = 469;
 
         Comment comment = new Comment(postId, "Автор", "author@example.com", "Содержимое комментария");
         HttpResponse<String> createCommentResponse = client.createComment(comment);

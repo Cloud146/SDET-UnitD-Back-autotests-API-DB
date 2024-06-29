@@ -21,4 +21,16 @@ public class Post {
         this.content = content;
         this.status = status;
     }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public String getStatus() {
+        return status;
+    }
 }

@@ -1,8 +1,7 @@
-package Tests.API_DB_OLD;
+package Tests.API_DB_ObjectMapper;
 
 import Helpers.ConfigurationProvider;
 import Helpers.DataBaseHelper;
-import Helpers.WordPressClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
@@ -42,8 +41,8 @@ public class DataBaseCommentTestsOld {
 
     @Story("Проверка данных созданных через SQL по API")
     @Severity(SeverityLevel.CRITICAL)
-    @Test(description = "Создание поста и комментариев к нему через SQL и получение ответов по API")
-    public void getCommentsByPostIdTest() throws SQLException, IOException {
+    @Test(description = "Создание поста и нескольких комментариев к нему через SQL и получение ответов по API")
+    public void getMultipleCommentsByPostIdTest() throws SQLException, IOException {
         postId = DataBaseHelper.insertPost("Заголовок поста", "Содержимое поста", "publish");
 
         int commentId1 = DataBaseHelper.insertComment(postId, "Автор1", "author1@example.com", "Содержимое комментария 1");

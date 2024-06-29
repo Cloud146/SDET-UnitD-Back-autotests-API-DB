@@ -1,8 +1,7 @@
-package Tests.API_DB_OLD;
+package Tests.API_DB_ObjectMapper;
 
 import Helpers.ConfigurationProvider;
 import Helpers.DataBaseHelper;
-import Helpers.WordPressClient;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.qameta.allure.Severity;
